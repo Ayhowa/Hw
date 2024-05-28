@@ -1,0 +1,33 @@
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+
+url = 'https://www.macrotrends.net/stocks/charts/TSLA/tesla/revenue'
+
+response = requests.get(url)
+soup = BeautifulSoup(response.text, 'html.parser')
+
+tables = soup.find_all('table')
+
+revenue_table = tables[1]
+
+rows = revenue_table.find_all('tr')
+
+quarters = []
+revenues = []
+
+for row in rows[1:]:
+    cols = row.find_all('td')
+    if len(cols) > 1:
+        quarters.append(cols[0].text.strip())
+        revenues.append(cols[1].text.strip().replace('$', '').replace(',', ''))
+
+tesla_revenue = pd.DataFrame({
+    'Quarter': quarters,
+    'Revenue': revenues
+})
+
+tesla_revenue['Revenue'] = pd.to_numeric(tesla_revenue['Revenue'], errors='coerce')
+
+tesla_revenue_tail = tesla_revenue.tail()
+print(tesla_revenue_tail)
