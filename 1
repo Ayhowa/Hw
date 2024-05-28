@@ -1,0 +1,11 @@
+import yfinance as yf
+import pandas as pd
+
+tesla_data = yf.download('TSLA', start='2020-01-01', end='2023-01-01')
+
+tesla_data_reset = tesla_data.reset_index()
+
+tesla_data_reset.to_csv('tesla_data_reset.csv', index=False)
+
+tesla_data_head = tesla_data_reset.head()
+print(tesla_data_head)
